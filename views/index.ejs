@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalEase - AI Legal Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --text: #1F2937;
+            --text-light: #6B7280;
+            --bg: #F9FAFB;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transform: translateY(0);
+            opacity: 1;
+            animation: containerEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #6366F1);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: #E0E7FF;
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .query-form {
+            padding: 2rem;
+            position: relative;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            background: var(--card-bg);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .response-container {
+            padding: 0 2rem 2rem;
+        }
+
+        .response-content {
+            background: var(--bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            min-height: 200px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .response-content p {
+            color: var(--text);
+            margin-bottom: 1rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .response-content strong {
+            color: var(--primary);
+        }
+
+        .spinner {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 3px solid #E0E7FF;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        @keyframes containerEntrance {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                border-radius: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 1rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LegalEase AI Assistant</h1>
+            <p>Get instant answers about Indian laws and legal concepts. Powered by comprehensive legal documentation.</p>
+        </div>
+        
+        <form class="query-form" id="queryForm">
+            <div class="input-group">
+                <input type="text" id="queryInput" placeholder="Ask your legal question..." required>
+                <button type="submit">
+                    <span>Search</span>
+                </button>
+            </div>
+        </form>
+
+        <div class="response-container">
+            <div id="spinner" class="spinner" style="display: none;"></div>
+            <div class="response-content" id="responseText"></div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('queryInput').value;
+            const spinner = document.getElementById('spinner');
+            const responseText = document.getElementById('responseText');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Clear previous content
+            responseText.innerHTML = '';
+            errorMessage.style.display = 'none';
+            spinner.style.display = 'block';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query }),
+                });
+
+                if (!response.ok) throw new Error('Server error');
+                
+                const data = await response.json();
+                responseText.innerHTML = formatResponse(data.response);
+            } catch (err) {
+                errorMessage.textContent = 'Error: ' + err.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                spinner.style.display = 'none';
+            }
+        });
+
+        function formatResponse(text) {
+            // Add basic formatting to the API response
+            return text
+                .split('\n\n')
+                .map(paragraph => `<p>${paragraph}</p>`)
+                .join('');
+        }
+    </script>
+</body>
+</html>
